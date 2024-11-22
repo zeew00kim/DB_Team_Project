@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zeew00cycle information</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>&lt; 등록된 자전거 정보 &gt;</h1>
+
+    <h2>Bike 테이블</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Bike ID</th>
+                <th>Subtype ID</th>
+                <th>Brand ID</th>
+                <th>Price</th>
+                <th>Frame Material ID</th>
+                <th>Wheel Material ID</th>
+                <th>Bike Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bike in bikes %}
+            <tr>
+                <td>{{ bike.bike_id }}</td>
+                <td>{{ bike.subtype_id }}</td>
+                <td>{{ bike.brand_id }}</td>
+                <td>{{ bike.price }}</td>
+                <td>{{ bike.frame_material_id }}</td>
+                <td>{{ bike.wheel_material_id }}</td>
+                <td>{{ bike.bike_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>BikeType 테이블</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Type ID</th>
+                <th>Type Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bike_type in bike_types %}
+            <tr>
+                <td>{{ bike_type.type_id }}</td>
+                <td>{{ bike_type.type_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>BikeSubType 테이블</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Subtype ID</th>
+                <th>Type ID</th>
+                <th>Subtype Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bike_subtype in bike_subtypes %}
+            <tr>
+                <td>{{ bike_subtype.subtype_id }}</td>
+                <td>{{ bike_subtype.type_id }}</td>
+                <td>{{ bike_subtype.subtype_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Brand 테이블</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Brand ID</th>
+                <th>Brand Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brand in brands %}
+            <tr>
+                <td>{{ brand.brand_id }}</td>
+                <td>{{ brand.brand_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Material 테이블</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Material ID</th>
+                <th>Material Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in materials %}
+            <tr>
+                <td>{{ material.material_id }}</td>
+                <td>{{ material.material_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script src="static/script.js"></script>
+</body>
+</html>
