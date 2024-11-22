@@ -1,52 +1,114 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: withe;
+/* 공통 스타일 */
+.header {
+    float: center;
+    clear: both;
+    margin: 0px;
+    border-bottom: solid black 3px;
+    background-color: darkgray;
+    width: 100%;
 }
 
-h1 {
-    color: black;
-    text-align: center;
+body {
+    font-family: Arial, sans-serif;
+    background-color: silver;
+    margin: 0;
+    padding: 0;
 }
 
 h2 {
     color: black;
-    text-align: left;
-    border: 2px solid black;
-    width: 160px;
-    text-align: center;
-    padding: 5px;
-    background-color: Lightblue;
-    margin: 0;
 }
 
-h2 a {
-    text-decoration: none;
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 0px;
+    margin-bottom: 0px;
     color: black;
+    padding: 20px;
 }
 
-h2 a:hover {
-    text-decoration: underline;
-    color: blue;
-    cursor: pointer;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    margin-top: 0;
-    background-color: lightgray;
-}
-
-.table, .table th, .table td {
-    border: 2px solid black;
-}
-
-.table th, .table td {
-    padding: 8px;
+footer {
+    background-color: darkgray;
     text-align: center;
+    padding: 10px 0;
+    border-top: solid black 3px;
+    height: 50px;
+    font-size: 1.2rem;
+    color: black;
+    font-weight: bold;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
-.table thead {
-    background-color: lightblue;
+/* 브랜드 로고 컨테이너 */
+#brand-logos {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 정렬 보완 */
+    flex-wrap: wrap; /* 화면 크기에 따라 줄 바꿈 */
+    gap: 20px; /* 이미지 간 간격 */
+    margin: 30px auto; /* 상하 여백 */
+    max-width: 100%; /* 페이지 너비 제한 */
+}
+
+/* 개별 브랜드 로고 이미지 */
+#brand-logos div img.brand-logo {
+    width: 200px;
+    height: 200px;
+    border: 3px solid #000;
+    border-radius: 20px; /* 둥근 모서리 */
+    transition: all 0.3s ease; /* 호버 애니메이션 */
+}
+
+/* 로고 호버 효과 */
+#brand-logos div img.brand-logo:hover {
+    opacity: 0.7; /* 불투명도 조정 */
+    transform: scale(1.05); /* 확대 효과 */
+}
+
+/* "이미지 없음" 박스 */
+#brand-logos div .no-image {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #000;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* 관리자 입력 섹션 */
+#admin-section {
+    text-align: center;
+    margin-top: 30px;
+}
+
+#admin-code {
+    padding: 10px;
+    width: 300px;
+    font-size: 1rem;
+    margin-right: 10px;
+    border: solid black 3px;
+}
+
+/* 관리자 접속 버튼 스타일 */
+#admin-section button {
+    background-color: black; /* 파란색 */
+    color: #FFFFFF; /* 흰색 글자 */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px; /* 살짝 둥근 모서리 */
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out; /* 부드러운 효과 */
+}
+
+#admin-section button:hover {
+    background-color: gray; /* 어두운 파란색으로 변경 */
+    transform: scale(1.05); /* 버튼 확대 */
 }

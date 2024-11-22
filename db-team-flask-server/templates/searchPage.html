@@ -1,9 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device=width, initial-scale=1.0">
-        <title>&lt; 자전거 검색 페이지 &gt;</title>
-        <link rel="">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Bikes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>카테고리 검색</h1>
+
+    <div style="text-align: center;">
+        <form id="search-form">
+            <label><input type="checkbox" name="category" value="Bike Name"> Bike Name</label>
+            <label><input type="checkbox" name="category" value="Price"> Price</label>
+            <label><input type="checkbox" name="category" value="Type Name"> Type Name</label>
+            <label><input type="checkbox" name="category" value="Subtype Name"> Subtype Name</label>
+            <label><input type="checkbox" name="category" value="Frame Material"> Frame Material</label>
+            <label><input type="checkbox" name="category" value="Wheel Material"> Wheel Material</label>
+            <button type="button" onclick="searchBikes()">조회🔍</button>
+        </form>
+    </div>
+
+    <div id="results" style="margin: 20px;"></div>
+
+    <footer>
+        DB_Team_Project_2024
+    </footer>
+
+    <script src="{{ url_for('static', filename='searchPage.js') }}"></script>
+</body>
 </html>
