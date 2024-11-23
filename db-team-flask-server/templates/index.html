@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bike Information System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        // navigateToSearchPage 함수 정의
+        function navigateToSearchPage(brandId) {
+            window.location.href = `/search?brand_id=${brandId}`;
+        }
+    </script>
 </head>
 <body>
     <div class="header">
-        <h1>[ 자전거 정보 조회 시스템 ]</h1>
+        <h1>&lt; 자전거 정보 조회 시스템 &gt;</h1>
     </div>
 
     <!-- 브랜드 로고 섹션 -->
@@ -19,8 +25,7 @@
             <img src="{{ url_for('static', filename=brand.image_path.replace('static/', '')) }}" 
                  alt="{{ brand.brand_name }}" 
                  class="brand-logo" 
-                 onclick="navigateToSearchPage('{{ brand.brand_id }}')"
-                 style="background-color: white">
+                 onclick="navigateToSearchPage('{{ brand.brand_id }}')">
             {% else %}
             <div class="no-image">
                 <span>이미지 없음</span>
@@ -32,9 +37,12 @@
 
     <!-- 관리자 입력 섹션 -->
     <div id="admin-section">
-        <input type="text" id="admin-code" placeholder="관리자 코드를 입력하세요">
+        <div class="showTable">
+            자전거 정보 등록 테이블 조회
+        </div>
+        <input type="text" id="admin-code" placeholder="관리자 코드를 입력하세요." style="font-weight: bold">
         <button onclick="validateAdminCode()">관리자 접속</button>
-        <p id="error-message" style="color: red; display: none;">잘못된 코드입니다 🥺</p>
+        <p id="error-message" style="color: red; display: none;"></p>
     </div>
 
     <footer>

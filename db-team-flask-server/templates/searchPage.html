@@ -7,17 +7,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>카테고리 검색</h1>
+    <div class="categoryHeader">
+        <h1>&lt; 원하는 카테고리를 선택 &gt;</h1>
+    </div>
 
-    <div style="text-align: center;">
+    <div class="checkBox">
         <form id="search-form">
-            <label><input type="checkbox" name="category" value="Bike Name"> Bike Name</label>
-            <label><input type="checkbox" name="category" value="Price"> Price</label>
-            <label><input type="checkbox" name="category" value="Type Name"> Type Name</label>
-            <label><input type="checkbox" name="category" value="Subtype Name"> Subtype Name</label>
-            <label><input type="checkbox" name="category" value="Frame Material"> Frame Material</label>
-            <label><input type="checkbox" name="category" value="Wheel Material"> Wheel Material</label>
-            <button type="button" onclick="searchBikes()">조회🔍</button>
+            <label><input type="checkbox" name="category" value="Bike Name"> 자전거 이름 </label>
+            <label><input type="checkbox" name="category" value="Price"> 가격 </label>
+            <label><input type="checkbox" name="category" value="Type Name"> 카테고리 </label>
+            <label><input type="checkbox" name="category" value="Subtype Name"> 서브 카테고리 </label>
+            <label><input type="checkbox" name="category" value="Frame Material"> 프레임 재질 </label>
+            <label><input type="checkbox" name="category" value="Wheel Material"> 휠 재질 </label>
+            <div>
+                <button class="categoryButton" onclick="searchBikes()">
+                     조 회 🔍 
+                </button>
+            </div>
         </form>
     </div>
 

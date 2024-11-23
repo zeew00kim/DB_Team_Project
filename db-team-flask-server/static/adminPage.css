@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: darkgray;
+}
+
+h1 {
+    color: black;
+    text-align: center;
+}
+
+h2 {
+    color: black;
+    text-align: center;
+    border: 2px solid black;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: lightblue;
+}
+
+h2 a {
+    text-decoration: none;
+    color: black;
+}
+
+h2 a:hover {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+}
+
+.table {
+    width: 80%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    background-color: lightgray;
+}
+
+.table, .table th, .table td {
+    border: 2px solid black;
+}
+
+.table th, .table td {
+    padding: 10px;
+    text-align: center;
+}
+
+.table thead {
+    background-color: lightblue;
+}
