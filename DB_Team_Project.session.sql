@@ -1,3 +1,5 @@
+select * from brand;
+
 -- -- 자전거 상위 종류 테이블 (예: 로드 자전거, 산악 자전거)
 -- CREATE TABLE BikeType (
 --     type_id INT PRIMARY KEY,                    -- 자전거 상위 종류 ID (기본 키)

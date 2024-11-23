@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
-    <link rel="stylesheet" href="adminPage.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='adminPage.css') }}">
 </head>
 <body>
-    <h1>&lt; 등록된 자전거 정보 조회 &gt;</h1>
+    <div class="header">
+        <h1>&lt; 등록된 자전거 정보 조회 &gt;</h1>
+    </div>
     
     <h2><a href="#">Bike 테이블</a></h2>
     <table class="table" id="bikeTable">
@@ -70,6 +72,6 @@
         <tbody></tbody>
     </table>
 
-    <script src="adminPage.js"></script>
+    <script src="{{ url_for('static', filename='adminPage.js') }}"></script>
 </body>
 </html>

@@ -5,9 +5,15 @@ function fetchData(url, tableSelector) {
         .then(data => {
             const tableBody = document.querySelector(`${tableSelector} tbody`);
             tableBody.innerHTML = ''; // 기존 데이터 초기화
+            
             data.forEach(item => {
                 const row = document.createElement('tr');
-                row.innerHTML = Object.values(item).map(value => `<td>${value}</td>`).join('');
+                
+                // null 값을 공백으로 처리
+                row.innerHTML = Object.values(item)
+                    .map(value => `<td>${value === null ? '' : value}</td>`)
+                    .join('');
+                
                 tableBody.appendChild(row);
             });
         })

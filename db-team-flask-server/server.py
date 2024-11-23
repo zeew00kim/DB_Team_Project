@@ -3,26 +3,38 @@ import webbrowser
 from threading import Timer
 from flask import Flask, jsonify, render_template, request, redirect, url_for
 import mysql.connector
+from mysql.connector import Error
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
 # 데이터베이스 연결 설정
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="madangdb"
-)
+def get_db_connection():
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root",
+            database="madangdb"
+        )
+        return connection
+    except Error as e:
+        print(f"Error connecting to MySQL: {e}")
+        return None
 
 # 홈 페이지 라우트
 @app.route('/')
 def home():
-    cursor = db.cursor(dictionary=True)
+    connection = get_db_connection()
+    if connection is None:
+        return "DB 연결 실패", 500
+
+    cursor = connection.cursor(dictionary=True)
     cursor.execute("SELECT * FROM brand")
     brands = cursor.fetchall()
     cursor.close()
+    connection.close()
 
     for brand in brands:
         image_base_path = f"static/images/{brand['brand_name']}"
@@ -47,7 +59,7 @@ def validate_admin():
     if admin_code == "2022158067":
         return redirect(url_for('admin_page'))
     else:
-        return render_template('index.html', brands=get_brands(), error_message="잘못된 코드입니다. 다시 입력하세요. 🤔")
+        return render_template('index.html', brands=[], error_message="잘못된 코드입니다. 다시 입력하세요. 🤔")
 
 # 검색 페이지 라우트
 @app.route('/search', methods=['GET'])
@@ -58,6 +70,10 @@ def search():
 # 검색 결과 라우트
 @app.route('/search-results', methods=['GET'])
 def search_results():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
     try:
         categories = request.args.get('categories', '').split(',')
         if not categories:
@@ -91,33 +107,92 @@ def search_results():
 
         query += " ORDER BY bike.price DESC"
 
-        cursor = db.cursor(dictionary=True)
+        cursor = connection.cursor(dictionary=True)
         cursor.execute(query, params)
         results = cursor.fetchall()
         cursor.close()
+        connection.close()
 
         return jsonify(results)
 
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({"error": "An error occurred"}), 500
+        return jsonify({"error": str(e)}), 500
 
 # 브랜드 정보 가져오기
+@app.route('/brands', methods=['GET'])
 def get_brands():
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM brand")
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT brand_id, brand_name FROM brand")  # 필요한 열만 선택
     brands = cursor.fetchall()
     cursor.close()
+    connection.close()
 
-    for brand in brands:
-        image_base_path = f"static/images/{brand['brand_name']}"
-        if os.path.exists(f"{image_base_path}.png"):
-            brand['image_path'] = f"{image_base_path}.png"
-        elif os.path.exists(f"{image_base_path}.jpeg"):
-            brand['image_path'] = f"{image_base_path}.jpeg"
-        else:
-            brand['image_path'] = None
-    return brands
+    return jsonify(brands)
+
+# Bike 테이블 정보 가져오기
+@app.route('/bikes', methods=['GET'])
+def get_bikes():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM bike")  # Bike 테이블의 모든 열 가져오기
+    bikes = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(bikes)
+
+# BikeType 테이블 정보 가져오기
+@app.route('/bikeTypes', methods=['GET'])
+def get_bike_types():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM bikeType")  # BikeType 테이블의 모든 열 가져오기
+    bike_types = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(bike_types)
+
+# BikeSubType 테이블 정보 가져오기
+@app.route('/bikeSubTypes', methods=['GET'])
+def get_bike_sub_types():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM bikeSubType")  # BikeSubType 테이블의 모든 열 가져오기
+    bike_sub_types = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(bike_sub_types)
+
+# Material 테이블 정보 가져오기
+@app.route('/materials', methods=['GET'])
+def get_materials():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM material")  # Material 테이블의 모든 열 가져오기
+    materials = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(materials)
 
 # 브라우저 자동 실행
 def open_browser():
