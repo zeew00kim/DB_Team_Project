@@ -13,15 +13,35 @@
         <p id="brand-message"></p> <!-- 브랜드 관련 문구 -->
     </div>
 
-    <div class="checkBox">
+    <div class="formContainer">
         <form id="search-form">
-            <label><input type="checkbox" name="category" value="Bike Name"> 자전거 이름 </label>
-            <label><input type="checkbox" name="category" value="Price"> 가격 </label>
-            <label><input type="checkbox" name="category" value="Type Name"> 카테고리 </label>
-            <label><input type="checkbox" name="category" value="Subtype Name"> 서브 카테고리 </label>
-            <label><input type="checkbox" name="category" value="Frame Material"> 프레임 재질 </label>
-            <label><input type="checkbox" name="category" value="Wheel Material"> 휠 재질 </label>
-            <div>
+            <table class="inputTable">
+                <tr>
+                    <th>카테고리</th>
+                    <td>
+                        <select id="type-name" name="type-name" multiple></select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>서브 카테고리</th>
+                    <td>
+                        <select id="subtype-name" name="subtype-name" multiple></select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>프레임 재질</th>
+                    <td>
+                        <select id="frame-material" name="frame-material" multiple></select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>휠 재질</th>
+                    <td>
+                        <select id="wheel-material" name="wheel-material" multiple></select>
+                    </td>
+                </tr>
+            </table>
+            <div class="buttonContainer">
                 <button type="button" class="categoryButton" onclick="searchBikes()">
                     조 회 🔍
                 </button>
@@ -63,15 +83,38 @@
         function searchBikes() {
             const form = document.getElementById('search-form');
             const formData = new FormData(form);
-            const selectedCategories = formData.getAll('category');
-
-            if (selectedCategories.length === 0) {
-                alert('카테고리를 하나 이상 선택해주세요!');
-                return;
+            const selectedCategories = {};
+            for (const pair of formData.entries()) {
+                if (!selectedCategories[pair[0]]) selectedCategories[pair[0]] = [];
+                selectedCategories[pair[0]].push(pair[1]);
             }
-
-            console.log('선택된 카테고리:', selectedCategories);
+            console.log('선택된 값:', selectedCategories);
         }
+
+        // API 데이터를 가져와 멀티 셀렉트 박스에 채우기
+        function populateSelect(url, selectId) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const selectElement = document.getElementById(selectId);
+                    selectElement.innerHTML = ""; // 기존 옵션 초기화
+                    data.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.name || item.type_name || item.subtype_name || item.material_name;
+                        option.textContent = item.name || item.type_name || item.subtype_name || item.material_name;
+                        selectElement.appendChild(option);
+                    });
+                })
+                .catch(error => console.error(`Error fetching data for ${selectId}:`, error));
+        }
+
+        // 페이지 로드 시 각 셀렉트 박스에 데이터 추가
+        document.addEventListener("DOMContentLoaded", () => {
+            populateSelect("/bikeTypes", "type-name"); // 카테고리
+            populateSelect("/bikeSubTypes", "subtype-name"); // 서브 카테고리
+            populateSelect("/materials", "frame-material"); // 프레임 재질
+            populateSelect("/materials", "wheel-material"); // 휠 재질
+        });
 
         // 페이지 로드 시 제목과 문구 업데이트 실행
         document.addEventListener('DOMContentLoaded', updateHeaderAndMessage);

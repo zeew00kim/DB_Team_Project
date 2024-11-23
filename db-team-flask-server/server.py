@@ -157,7 +157,7 @@ def get_bike_types():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM bikeType")  # BikeType 테이블의 모든 열 가져오기
+    cursor.execute("SELECT type_name FROM bikeType")  # 필요한 열만 선택
     bike_types = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -172,7 +172,7 @@ def get_bike_sub_types():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM bikeSubType")  # BikeSubType 테이블의 모든 열 가져오기
+    cursor.execute("SELECT subtype_name AS name FROM bikeSubType")  # 필요한 열만 선택
     bike_sub_types = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -187,12 +187,87 @@ def get_materials():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM material")  # Material 테이블의 모든 열 가져오기
+    cursor.execute("SELECT material_name AS name FROM material")  # 필요한 열만 선택
     materials = cursor.fetchall()
     cursor.close()
     connection.close()
 
     return jsonify(materials)
+
+# 관리자 전용 BikeType 테이블 데이터 가져오기
+@app.route('/admin-bikeTypes', methods=['GET'])
+def get_admin_bike_types():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT type_id, type_name FROM bikeType")  # 필요한 열만 선택
+    bike_types = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(bike_types)
+
+# 관리자 전용 BikeSubType 테이블 데이터 가져오기
+@app.route('/admin-bikeSubTypes', methods=['GET'])
+def get_admin_bike_sub_types():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT subtype_id, type_id, subtype_name FROM bikeSubType")  # 필요한 열만 선택
+    bike_sub_types = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(bike_sub_types)
+
+# 관리자 전용 Material 테이블 데이터 가져오기
+@app.route('/admin-materials', methods=['GET'])
+def get_admin_materials():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT material_id, material_name FROM material")  # 필요한 열만 선택
+    materials = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(materials)
+
+# 관리자 전용 Brand 테이블 데이터 가져오기
+@app.route('/admin-brands', methods=['GET'])
+def get_admin_brands():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT brand_id, brand_name FROM brand")  # 필요한 열만 선택
+    brands = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(brands)
+
+# 관리자 전용 Bike 테이블 데이터 가져오기
+@app.route('/admin-bikes', methods=['GET'])
+def get_admin_bikes():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT bike_id, subtype_id, brand_id, price, frame_material_id, wheel_material_id, bike_name FROM bike")  # 필요한 열만 선택
+    bikes = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(bikes)
 
 # 브라우저 자동 실행
 def open_browser():

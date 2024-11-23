@@ -1,4 +1,3 @@
-/* 공통 스타일 */
 body {
     font-family: Arial, sans-serif;
     background-color: silver;
@@ -18,6 +17,13 @@ h1 {
     background-color: darkgray;
     border-bottom: 3px solid black;
     width: 100%;
+}
+
+.subTitle {
+    text-align: center;
+    margin-top: 0;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 footer {
@@ -54,7 +60,7 @@ footer {
 }
 
 .brand-logo:hover {
-    opacity: 0.7;
+    opacity: 0.5;
     transform: scale(1.05);
 }
 
@@ -66,11 +72,11 @@ footer {
     justify-content: center;
     border: 2px solid black;
     border-radius: 20px;
-    background-color: #f0f0f0;
-    color: #666;
+    background-color: white;
+    color: gray;
 }
 
-/* 관리자 섹션 */
+/* 여기부터 관리자 코드 입력 관련 */
 #admin-section {
     text-align: center;
     margin-top: 30px;
@@ -101,15 +107,11 @@ footer {
     transform: scale(1.05);
 }
 
+/* 여기부터 SearchPage css 선택자 */
 .categoryHeader {
     background-color: darkgray;
     border-bottom: 3px solid black;
     width: 100%;
-}
-
-.checkBox {
-    margin-top: 50px;
-    text-align: center;
 }
 
 #search-form {
@@ -122,21 +124,67 @@ footer {
     color: white;
     border: none;
     padding: 10px 20px;
+    margin-top: 0px;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     font-size: 1.2rem;
     font-weight: bold;
+    width: 100%;
 }
 
 .categoryButton:hover {
     background-color: gray;
     transform: scale(1.05);
-    font-size: larger;
+    font-size: 20px;
+    border: solid black 3px;
 }
 
 .showTable {
     font-size: 20px;
     font-weight: bold; 
     margin-bottom: 10px;
+}
+
+.formContainer {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+    padding: 20px;
+    background-color: darkgray;
+    border-radius: 10px;
+    border: solid black 3px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.inputTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border: solid black 3px;
+}
+
+.inputTable th, .inputTable td {
+    text-align: center;
+    padding: 10px;
+    border: solid black 2px;
+}
+
+.inputTable th {
+    background-color: skyblue;
+    font-weight: bold;
+    width: 30%;
+}
+
+.inputTable td {
+    background-color: White;
+    width: 70%;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
