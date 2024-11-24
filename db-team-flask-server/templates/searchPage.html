@@ -45,6 +45,9 @@
                 <button type="button" class="categoryButton" onclick="searchBikes()">
                     조 회 🔍
                 </button>
+                <button type="button" class="refreshButton" onclick="location.reload()">
+                    새로고침 🔄
+                </button>
             </div>
         </form>
     </div>
@@ -81,16 +84,22 @@
             const formData = new FormData(form);
             const selectedValues = {};
 
-            // 선택한 옵션들을 객체로 정리
+            // 폼 데이터 추출
             for (const [key, value] of formData.entries()) {
                 if (!selectedValues[key]) selectedValues[key] = [];
                 selectedValues[key].push(value);
             }
 
-            // 조건 출력 (디버그용)
-            console.log('선택된 조건:', selectedValues);
+            // 브랜드 ID 추가
+            const brandId = getQueryParam('brand_id');
+            if (brandId) {
+                selectedValues['brand_id'] = brandId;
+            }
 
-            // 조건에 따라 API 요청 (예: POST 요청)
+            // 서버에 데이터 전송
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '<p style="text-align: center;">검색 중입니다... ⏳</p>';
+
             fetch('/searchBikes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -98,15 +107,15 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    const resultsContainer = document.getElementById('results-container');
                     resultsContainer.innerHTML = ''; // 기존 결과 초기화
 
                     if (data.length > 0) {
-                        // 결과가 있을 경우 테이블 생성
                         const table = document.createElement('table');
                         table.className = 'results-table';
+                        table.style.border = '1px solid black';
+                        table.style.width = '100%';
+                        table.style.textAlign = 'center';
 
-                        // 테이블 헤더
                         const headerRow = document.createElement('tr');
                         headerRow.innerHTML = `
                             <th>자전거 이름</th>
@@ -114,36 +123,28 @@
                         `;
                         table.appendChild(headerRow);
 
-                        // 테이블 데이터 행 추가
                         data.forEach(bike => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td>${bike.bike_name}</td>
-                                <td>${bike.price}</td>
+                                <td>${bike.price.toLocaleString()} 원</td>
                             `;
                             table.appendChild(row);
                         });
 
-                        // 결과 메시지와 테이블 추가
-                        const resultMessage = document.createElement('p');
-                        resultMessage.textContent = '조건에 맞는 자전거들의 목록입니다 👍';
-                        resultMessage.style.fontWeight = 'bold';
-                        resultMessage.style.fontSize = '18px';
-                        resultMessage.style.marginBottom = '10px';
-
-                        resultsContainer.appendChild(resultMessage);
                         resultsContainer.appendChild(table);
                     } else {
-                        // 결과가 없을 경우 메시지 출력
                         const noResultMessage = document.createElement('p');
                         noResultMessage.textContent = '조건에 맞는 자전거 정보가 없습니다 😢';
                         noResultMessage.style.color = 'red';
-                        noResultMessage.style.fontWeight = 'bold';
                         noResultMessage.style.textAlign = 'center';
                         resultsContainer.appendChild(noResultMessage);
                     }
                 })
-                .catch(error => console.error('Error fetching search results:', error));
+                .catch(error => {
+                    console.error('Error fetching search results:', error);
+                    resultsContainer.innerHTML = '<p style="color: red; text-align: center;">오류가 발생했습니다. 다시 시도해주세요.</p>';
+                });
         }
 
         // API 데이터를 가져와 멀티 셀렉트 박스에 채우기
@@ -152,11 +153,11 @@
                 .then(response => response.json())
                 .then(data => {
                     const selectElement = document.getElementById(selectId);
-                    selectElement.innerHTML = ""; // 기존 옵션 초기화
+                    selectElement.innerHTML = ''; // 기존 옵션 초기화
                     data.forEach(item => {
-                        const option = document.createElement("option");
-                        option.value = item.name || item.type_name || item.subtype_name || item.material_name;
-                        option.textContent = item.name || item.type_name || item.subtype_name || item.material_name;
+                        const option = document.createElement('option');
+                        option.value = item.type_name ?? item.subtype_name ?? item.material_name ?? 'Unknown';
+                        option.textContent = item.type_name ?? item.subtype_name ?? item.material_name ?? '알 수 없음';
                         selectElement.appendChild(option);
                     });
                 })
@@ -164,15 +165,13 @@
         }
 
         // 페이지 로드 시 각 셀렉트 박스에 데이터 추가
-        document.addEventListener("DOMContentLoaded", () => {
-            populateSelect("/bikeTypes", "type-name"); // 카테고리
-            populateSelect("/bikeSubTypes", "subtype-name"); // 서브 카테고리
-            populateSelect("/materials", "frame-material"); // 프레임 재질
-            populateSelect("/materials", "wheel-material"); // 휠 재질
+        document.addEventListener('DOMContentLoaded', () => {
+            populateSelect('/bikeTypes', 'type-name'); // 카테고리
+            populateSelect('/bikeSubTypes', 'subtype-name'); // 서브 카테고리
+            populateSelect('/materials', 'frame-material'); // 프레임 재질
+            populateSelect('/materials', 'wheel-material'); // 휠 재질
+            updateHeaderAndMessage(); // 제목과 문구 업데이트
         });
-
-        // 페이지 로드 시 제목과 문구 업데이트 실행
-        document.addEventListener('DOMContentLoaded', updateHeaderAndMessage);
     </script>
 </body>
 </html>

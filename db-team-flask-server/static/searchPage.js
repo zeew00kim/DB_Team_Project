@@ -29,15 +29,14 @@ function populateSelect(url, selectId) {
             selectElement.innerHTML = ''; // 기존 옵션 초기화
             data.forEach(item => {
                 const option = document.createElement('option');
-                option.value = item.name || item.type_name || item.subtype_name || item.material_name;
-                option.textContent = item.name || item.type_name || item.subtype_name || item.material_name;
+                option.value = item.type_name ?? item.subtype_name ?? item.material_name ?? item.brand_name ?? item.name ?? 'Unknown';
+                option.textContent = item.type_name ?? item.subtype_name ?? item.material_name ?? item.brand_name ?? item.name ?? '알 수 없음';
                 selectElement.appendChild(option);
             });
         })
         .catch(error => console.error(`Error fetching data for ${selectId}:`, error));
 }
 
-// 검색 버튼 클릭 시 API로 선택된 조건에 맞는 데이터를 조회하고 결과를 표시
 // 검색 버튼 클릭 시 API로 선택된 조건에 맞는 데이터를 조회하고 결과를 표시
 function searchBikes() {
     const form = document.getElementById('search-form');
@@ -51,15 +50,17 @@ function searchBikes() {
     }
 
     // 브랜드 ID 추가
-    const brandId = getQueryParam('brand_id'); // URL에서 brand_id 가져오기
+    const brandId = getQueryParam('brand_id');
     if (brandId) {
-        selectedValues['brand_id'] = brandId; // API 요청에 brand_id 포함
+        selectedValues['brand_id'] = brandId;
+    } else {
+        console.warn('브랜드 ID가 없습니다. 모든 브랜드를 대상으로 검색합니다.');
     }
 
-    // 디버깅용 출력
-    console.log('전송 데이터:', selectedValues);
-
     // 서버에 데이터 전송
+    const resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '<p style="text-align: center;">검색 중입니다... ⏳</p>';
+
     fetch('/searchBikes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -67,15 +68,15 @@ function searchBikes() {
     })
         .then(response => response.json())
         .then(data => {
-            const resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = ''; // 기존 결과 초기화
 
             if (data.length > 0) {
-                // 결과 테이블 생성
                 const table = document.createElement('table');
                 table.className = 'results-table';
+                table.style.border = '1px solid black';
+                table.style.width = '100%';
+                table.style.textAlign = 'center';
 
-                // 테이블 헤더
                 const headerRow = document.createElement('tr');
                 headerRow.innerHTML = `
                     <th>자전거 이름</th>
@@ -83,20 +84,17 @@ function searchBikes() {
                 `;
                 table.appendChild(headerRow);
 
-                // 데이터 행 추가
                 data.forEach(bike => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${bike.bike_name}</td>
-                        <td>${bike.price}</td>
+                        <td>${bike.price.toLocaleString()} 원</td>
                     `;
                     table.appendChild(row);
                 });
 
-                // 결과 표시
                 resultsContainer.appendChild(table);
             } else {
-                // 결과가 없는 경우 메시지 출력
                 const noResultMessage = document.createElement('p');
                 noResultMessage.textContent = '조건에 맞는 자전거 정보가 없습니다 😢';
                 noResultMessage.style.color = 'red';
@@ -104,7 +102,10 @@ function searchBikes() {
                 resultsContainer.appendChild(noResultMessage);
             }
         })
-        .catch(error => console.error('Error fetching search results:', error));
+        .catch(error => {
+            console.error('Error fetching search results:', error);
+            resultsContainer.innerHTML = '<p style="color: red; text-align: center;">오류가 발생했습니다. 다시 시도해주세요.</p>';
+        });
 }
 
 // 페이지 로드 시 각 셀렉트 박스에 데이터 추가

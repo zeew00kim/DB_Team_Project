@@ -345,11 +345,11 @@ def search_bikes():
 
     try:
         data = request.json  # 프론트엔드에서 전송된 JSON 데이터
+        brand_id = data.get("brand_id")  # 클라이언트에서 전송된 brand_id
         type_names = data.get("type-name", [])
         subtype_names = data.get("subtype-name", [])
         frame_materials = data.get("frame-material", [])
         wheel_materials = data.get("wheel-material", [])
-        brand_id = data.get("brand_id")  # 클라이언트에서 전송된 brand_id
 
         # 기본 쿼리
         query = """
@@ -359,17 +359,11 @@ def search_bikes():
             INNER JOIN biketype ON bikesubtype.type_id = biketype.type_id
             INNER JOIN material AS frame_material ON bike.frame_material_id = frame_material.material_id
             INNER JOIN material AS wheel_material ON bike.wheel_material_id = wheel_material.material_id
-            WHERE 1=1
+            WHERE bike.brand_id = %s
         """
+        params = [brand_id]
 
-        params = []
-
-        # 브랜드 필터 추가
-        if brand_id:
-            query += " AND bike.brand_id = %s"
-            params.append(brand_id)
-
-        # 동적으로 조건 추가
+        # 조건 추가
         if type_names:
             query += " AND biketype.type_name IN (%s)" % ','.join(['%s'] * len(type_names))
             params.extend(type_names)
@@ -398,6 +392,7 @@ def search_bikes():
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
 
+
 # 브라우저 자동 실행
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5500")
@@ -405,5 +400,3 @@ def open_browser():
 if __name__ == '__main__':
     Timer(1, open_browser).start()
     app.run(debug=True, port=5500)
-
-# 커밋용
