@@ -269,6 +269,67 @@ def get_admin_bikes():
 
     return jsonify(bikes)
 
+@app.route('/searchBikes', methods=['POST'])
+def search_bikes():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    try:
+        data = request.json  # 프론트엔드에서 전송된 JSON 데이터
+        type_names = data.get("type-name", [])
+        subtype_names = data.get("subtype-name", [])
+        frame_materials = data.get("frame-material", [])
+        wheel_materials = data.get("wheel-material", [])
+        brand_id = data.get("brand_id")  # 클라이언트에서 전송된 brand_id
+
+        # 기본 쿼리
+        query = """
+            SELECT bike.bike_name, bike.price
+            FROM bike
+            INNER JOIN bikesubtype ON bike.subtype_id = bikesubtype.subtype_id
+            INNER JOIN biketype ON bikesubtype.type_id = biketype.type_id
+            INNER JOIN material AS frame_material ON bike.frame_material_id = frame_material.material_id
+            INNER JOIN material AS wheel_material ON bike.wheel_material_id = wheel_material.material_id
+            WHERE 1=1
+        """
+
+        params = []
+
+        # 브랜드 필터 추가
+        if brand_id:
+            query += " AND bike.brand_id = %s"
+            params.append(brand_id)
+
+        # 동적으로 조건 추가
+        if type_names:
+            query += " AND biketype.type_name IN (%s)" % ','.join(['%s'] * len(type_names))
+            params.extend(type_names)
+        if subtype_names:
+            query += " AND bikesubtype.subtype_name IN (%s)" % ','.join(['%s'] * len(subtype_names))
+            params.extend(subtype_names)
+        if frame_materials:
+            query += " AND frame_material.material_name IN (%s)" % ','.join(['%s'] * len(frame_materials))
+            params.extend(frame_materials)
+        if wheel_materials:
+            query += " AND wheel_material.material_name IN (%s)" % ','.join(['%s'] * len(wheel_materials))
+            params.extend(wheel_materials)
+
+        # 정렬 추가
+        query += " ORDER BY bike.price DESC"
+
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(query, params)
+        results = cursor.fetchall()
+        cursor.close()
+        connection.close()
+
+        return jsonify(results)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
 # 브라우저 자동 실행
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5500")

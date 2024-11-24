@@ -50,11 +50,7 @@
     </div>
 
     <!-- 검색 결과를 표시할 영역 -->
-    <div id="results" style="margin: 20px;"></div>
-
-    <footer>
-        DB_Team_Project_2024
-    </footer>
+    <div id="results-container" style="margin: 20px;"></div>
 
     <script>
         // URL의 쿼리 파라미터에서 값을 가져오는 함수
@@ -79,16 +75,75 @@
             }
         }
 
-        // 검색 버튼 클릭 시 선택한 카테고리를 콘솔에 출력 (추후 검색 API 호출 가능)
+        // 검색 버튼 클릭 시 API로 선택된 조건에 맞는 데이터를 조회하고 결과를 표시
         function searchBikes() {
             const form = document.getElementById('search-form');
             const formData = new FormData(form);
-            const selectedCategories = {};
-            for (const pair of formData.entries()) {
-                if (!selectedCategories[pair[0]]) selectedCategories[pair[0]] = [];
-                selectedCategories[pair[0]].push(pair[1]);
+            const selectedValues = {};
+
+            // 선택한 옵션들을 객체로 정리
+            for (const [key, value] of formData.entries()) {
+                if (!selectedValues[key]) selectedValues[key] = [];
+                selectedValues[key].push(value);
             }
-            console.log('선택된 값:', selectedCategories);
+
+            // 조건 출력 (디버그용)
+            console.log('선택된 조건:', selectedValues);
+
+            // 조건에 따라 API 요청 (예: POST 요청)
+            fetch('/searchBikes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(selectedValues)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('results-container');
+                    resultsContainer.innerHTML = ''; // 기존 결과 초기화
+
+                    if (data.length > 0) {
+                        // 결과가 있을 경우 테이블 생성
+                        const table = document.createElement('table');
+                        table.className = 'results-table';
+
+                        // 테이블 헤더
+                        const headerRow = document.createElement('tr');
+                        headerRow.innerHTML = `
+                            <th>자전거 이름</th>
+                            <th>가격</th>
+                        `;
+                        table.appendChild(headerRow);
+
+                        // 테이블 데이터 행 추가
+                        data.forEach(bike => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${bike.bike_name}</td>
+                                <td>${bike.price}</td>
+                            `;
+                            table.appendChild(row);
+                        });
+
+                        // 결과 메시지와 테이블 추가
+                        const resultMessage = document.createElement('p');
+                        resultMessage.textContent = '조건에 맞는 자전거들의 목록입니다 👍';
+                        resultMessage.style.fontWeight = 'bold';
+                        resultMessage.style.fontSize = '18px';
+                        resultMessage.style.marginBottom = '10px';
+
+                        resultsContainer.appendChild(resultMessage);
+                        resultsContainer.appendChild(table);
+                    } else {
+                        // 결과가 없을 경우 메시지 출력
+                        const noResultMessage = document.createElement('p');
+                        noResultMessage.textContent = '조건에 맞는 자전거 정보가 없습니다 😢';
+                        noResultMessage.style.color = 'red';
+                        noResultMessage.style.fontWeight = 'bold';
+                        noResultMessage.style.textAlign = 'center';
+                        resultsContainer.appendChild(noResultMessage);
+                    }
+                })
+                .catch(error => console.error('Error fetching search results:', error));
         }
 
         // API 데이터를 가져와 멀티 셀렉트 박스에 채우기

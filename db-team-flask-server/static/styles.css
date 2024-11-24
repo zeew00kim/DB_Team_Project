@@ -26,7 +26,7 @@ h1 {
     font-weight: bold;
 }
 
-footer {
+/* .footer {
     background-color: darkgray;
     text-align: center;
     padding: 10px 0;
@@ -38,7 +38,7 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-}
+} */
 
 #brand-logos {
     display: flex;
@@ -130,7 +130,7 @@ footer {
     transition: all 0.3s ease-in-out;
     font-size: 1.2rem;
     font-weight: bold;
-    width: 100%;
+    width: 50%;
 }
 
 .categoryButton:hover {
@@ -187,4 +187,26 @@ select {
     font-size: 18px;
     border: 2px solid black;
     border-radius: 4px;
+}
+
+/* 조회 버튼을 클릭 시 조회되는 테이블 CSS 스타일 */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.results-table th, .results-table td {
+    border: 2px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+.results-table th {
+    background-color: darkgray;
+    font-weight: bold;
+}
+
+.results-table td {
+    background-color: lightgray;
 }
