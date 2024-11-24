@@ -135,7 +135,7 @@ footer {
 
 .categoryButton:hover {
     background-color: gray;
-    transform: scale(1.05);
+    transform: scale(1.01);
     font-size: 20px;
     border: solid black 3px;
 }
@@ -151,7 +151,7 @@ footer {
     width: 80%;
     max-width: 600px;
     padding: 20px;
-    background-color: darkgray;
+    background-color: lightslategray;
     border-radius: 10px;
     border: solid black 3px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -171,20 +171,20 @@ footer {
 }
 
 .inputTable th {
-    background-color: skyblue;
+    background-color: darkgray;
     font-weight: bold;
     width: 30%;
 }
 
 .inputTable td {
-    background-color: White;
+    background-color: lightgray;
     width: 70%;
 }
 
 select {
     width: 100%;
     padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
+    font-size: 18px;
+    border: 2px solid black;
     border-radius: 4px;
 }
