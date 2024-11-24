@@ -99,11 +99,11 @@ def search_results():
             INNER JOIN material ON bike.frame_material_id = material.material_id
             WHERE 1=1
         """
+        params = []
+
         if brand_id:
             query += " AND bike.brand_id = %s"
-            params = (brand_id,)
-        else:
-            params = ()
+            params.append(brand_id)
 
         query += " ORDER BY bike.price DESC"
 
@@ -127,7 +127,7 @@ def get_brands():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT brand_id, brand_name FROM brand")  # 필요한 열만 선택
+    cursor.execute("SELECT brand_id, brand_name FROM brand")
     brands = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -142,7 +142,7 @@ def get_bikes():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM bike")  # Bike 테이블의 모든 열 가져오기
+    cursor.execute("SELECT * FROM bike")
     bikes = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -157,7 +157,7 @@ def get_bike_types():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT type_name FROM bikeType")  # 필요한 열만 선택
+    cursor.execute("SELECT type_id, type_name FROM biketype")
     bike_types = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -172,7 +172,7 @@ def get_bike_sub_types():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT subtype_name AS name FROM bikeSubType")  # 필요한 열만 선택
+    cursor.execute("SELECT subtype_id, type_id, subtype_name FROM bikesubtype")
     bike_sub_types = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -187,14 +187,14 @@ def get_materials():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT material_name AS name FROM material")  # 필요한 열만 선택
+    cursor.execute("SELECT material_id, material_name FROM material")
     materials = cursor.fetchall()
     cursor.close()
     connection.close()
 
     return jsonify(materials)
 
-# 관리자 전용 BikeType 테이블 데이터 가져오기
+# 관리자용 데이터 가져오기
 @app.route('/admin-bikeTypes', methods=['GET'])
 def get_admin_bike_types():
     connection = get_db_connection()
@@ -202,14 +202,13 @@ def get_admin_bike_types():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT type_id, type_name FROM bikeType")  # 필요한 열만 선택
+    cursor.execute("SELECT type_id, type_name FROM biketype")
     bike_types = cursor.fetchall()
     cursor.close()
     connection.close()
 
     return jsonify(bike_types)
 
-# 관리자 전용 BikeSubType 테이블 데이터 가져오기
 @app.route('/admin-bikeSubTypes', methods=['GET'])
 def get_admin_bike_sub_types():
     connection = get_db_connection()
@@ -217,29 +216,18 @@ def get_admin_bike_sub_types():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT subtype_id, type_id, subtype_name FROM bikeSubType")  # 필요한 열만 선택
+    query = """
+        SELECT subtype_id, type_id, subtype_name
+        FROM bikesubtype
+        ORDER BY subtype_id ASC
+    """
+    cursor.execute(query)
     bike_sub_types = cursor.fetchall()
     cursor.close()
     connection.close()
 
     return jsonify(bike_sub_types)
 
-# 관리자 전용 Material 테이블 데이터 가져오기
-@app.route('/admin-materials', methods=['GET'])
-def get_admin_materials():
-    connection = get_db_connection()
-    if connection is None:
-        return jsonify({"error": "DB 연결 실패"}), 500
-
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT material_id, material_name FROM material")  # 필요한 열만 선택
-    materials = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    return jsonify(materials)
-
-# 관리자 전용 Brand 테이블 데이터 가져오기
 @app.route('/admin-brands', methods=['GET'])
 def get_admin_brands():
     connection = get_db_connection()
@@ -247,14 +235,37 @@ def get_admin_brands():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT brand_id, brand_name FROM brand")  # 필요한 열만 선택
+    query = """
+        SELECT brand_id, brand_name
+        FROM brand
+        ORDER BY brand_id ASC
+    """
+    cursor.execute(query)
     brands = cursor.fetchall()
     cursor.close()
     connection.close()
 
     return jsonify(brands)
 
-# 관리자 전용 Bike 테이블 데이터 가져오기
+@app.route('/admin-materials', methods=['GET'])
+def get_admin_materials():
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "DB 연결 실패"}), 500
+
+    cursor = connection.cursor(dictionary=True)
+    query = """
+        SELECT material_id, material_name
+        FROM material
+        ORDER BY material_id ASC
+    """
+    cursor.execute(query)
+    materials = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return jsonify(materials)
+
 @app.route('/admin-bikes', methods=['GET'])
 def get_admin_bikes():
     connection = get_db_connection()
@@ -262,7 +273,21 @@ def get_admin_bikes():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT bike_id, subtype_id, brand_id, price, frame_material_id, wheel_material_id, bike_name FROM bike")  # 필요한 열만 선택
+    # 수정된 SQL 쿼리: bikesubtype 테이블을 포함한 조인
+    query = """
+        SELECT 
+            bike.bike_id,
+            bike.subtype_id,
+            bike.brand_id,
+            bike.price,
+            bike.frame_material_id,
+            bike.wheel_material_id,
+            bike.bike_name
+        FROM bike
+        INNER JOIN bikesubtype ON bike.subtype_id = bikesubtype.subtype_id
+        ORDER BY bike.bike_id ASC
+    """
+    cursor.execute(query)
     bikes = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -276,14 +301,13 @@ def search_bikes():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     try:
-        data = request.json  # 프론트엔드에서 전송된 JSON 데이터
+        data = request.json
         type_names = data.get("type-name", [])
         subtype_names = data.get("subtype-name", [])
         frame_materials = data.get("frame-material", [])
         wheel_materials = data.get("wheel-material", [])
-        brand_id = data.get("brand_id")  # 클라이언트에서 전송된 brand_id
+        brand_id = data.get("brand_id")
 
-        # 기본 쿼리
         query = """
             SELECT bike.bike_name, bike.price
             FROM bike
@@ -293,29 +317,28 @@ def search_bikes():
             INNER JOIN material AS wheel_material ON bike.wheel_material_id = wheel_material.material_id
             WHERE 1=1
         """
-
         params = []
 
-        # 브랜드 필터 추가
         if brand_id:
             query += " AND bike.brand_id = %s"
             params.append(brand_id)
 
-        # 동적으로 조건 추가
         if type_names:
             query += " AND biketype.type_name IN (%s)" % ','.join(['%s'] * len(type_names))
             params.extend(type_names)
+
         if subtype_names:
             query += " AND bikesubtype.subtype_name IN (%s)" % ','.join(['%s'] * len(subtype_names))
             params.extend(subtype_names)
+
         if frame_materials:
             query += " AND frame_material.material_name IN (%s)" % ','.join(['%s'] * len(frame_materials))
             params.extend(frame_materials)
+
         if wheel_materials:
             query += " AND wheel_material.material_name IN (%s)" % ','.join(['%s'] * len(wheel_materials))
             params.extend(wheel_materials)
 
-        # 정렬 추가
         query += " ORDER BY bike.price DESC"
 
         cursor = connection.cursor(dictionary=True)

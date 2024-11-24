@@ -6,17 +6,16 @@ async function fetchData(url, tableSelector) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
         const tableBody = document.querySelector(`${tableSelector} tbody`);
         tableBody.innerHTML = ''; // 기존 데이터 초기화
 
+        // 각 데이터 행을 테이블에 추가
         data.forEach(item => {
             const row = document.createElement('tr');
-
-            // null 값을 공백으로 처리
             row.innerHTML = Object.values(item)
-                .map(value => `<td>${value === null ? '' : value}</td>`)
+                .map(value => `<td>${value === null || value === undefined ? '' : value}</td>`)
                 .join('');
-
             tableBody.appendChild(row);
         });
     } catch (error) {
