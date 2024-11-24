@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bike Information System</title>
+    <title>자전거 정보 조회 시스템</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script>
-        // 특정 브랜드의 ID와 이름을 쿼리 파라미터로 전달하며 검색 페이지로 이동
         function navigateToSearchPage(brandId, brandName) {
             window.location.href = `/search?brand_id=${brandId}&brand=${encodeURIComponent(brandName)}`;
         }
 
-        // 관리자 코드 검증 및 이동
         function validateAdminCode() {
             const adminCodeInput = document.getElementById('admin-code').value;
             const errorMessage = document.getElementById('error-message');
 
-            // 관리자 코드 검증
             if (adminCodeInput === "2022158067") {
-                window.location.href = "/admin-page"; // 관리자 페이지로 이동
+                window.location.href = "/admin-page";
             } else {
                 errorMessage.style.display = "block";
                 errorMessage.style.fontWeight = "bold";
@@ -34,7 +31,6 @@
         <p class="subTitle">아래에서 원하는 자전거 브랜드를 선택하세요😊</p>
     </div>
 
-    <!-- 브랜드 로고 섹션 -->
     <div id="brand-logos">
         {% for brand in brands %}
         <div>
@@ -52,7 +48,6 @@
         {% endfor %}
     </div>
 
-    <!-- 관리자 입력 섹션 -->
     <div id="admin-section">
         <div class="showTable">
             자전거 정보 등록 테이블 조회
@@ -61,6 +56,11 @@
         <button onclick="validateAdminCode()">관리자 접속</button>
         <p id="error-message" style="color: red; display: none;">잘못된 코드입니다 🥺</p>
     </div>
-
 </body>
+
+<footer style="background-color: darkgray; text-align: center; 
+padding: 10px 0; border-top: 3px solid black; height: 50px; width: 100%;
+font-size: 1.2rem; font-weight: bold; position: fixed; bottom: 0;">
+    DataBase_Team_Project_2024
+</footer>
 </html>

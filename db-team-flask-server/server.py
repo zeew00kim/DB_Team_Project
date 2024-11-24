@@ -9,7 +9,6 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
-# 데이터베이스 연결 설정
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
@@ -23,7 +22,6 @@ def get_db_connection():
         print(f"Error connecting to MySQL: {e}")
         return None
 
-# 홈 페이지 라우트
 @app.route('/')
 def home():
     connection = get_db_connection()
@@ -47,12 +45,10 @@ def home():
 
     return render_template('index.html', brands=brands)
 
-# 관리자 페이지 라우트
 @app.route('/admin-page')
 def admin_page():
     return render_template('adminPage.html')
 
-# 관리자 코드 검증
 @app.route('/validate-admin', methods=['POST'])
 def validate_admin():
     admin_code = request.form.get('admin-code')
@@ -61,13 +57,11 @@ def validate_admin():
     else:
         return render_template('index.html', brands=[], error_message="잘못된 코드입니다. 다시 입력하세요. 🤔")
 
-# 검색 페이지 라우트
 @app.route('/search', methods=['GET'])
 def search():
     brand_id = request.args.get('brand_id')
     return render_template('searchPage.html', brand_id=brand_id)
 
-# 검색 결과 라우트
 @app.route('/search-results', methods=['GET'])
 def search_results():
     connection = get_db_connection()
@@ -118,8 +112,6 @@ def search_results():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
-
-# 브랜드 정보 가져오기
 
 @app.route('/bikes', methods=['GET'])
 def get_bikes():
@@ -227,15 +219,12 @@ def get_materials():
 
     return jsonify(materials)
 
-# 관리자 전용 BikeType 테이블 데이터 가져오기
-
 @app.route('/admin-bikes', methods=['GET'])
 def get_admin_bikes():
     connection = get_db_connection()
     if connection is None:
         return jsonify({"error": "DB 연결 실패"}), 500
 
-    # 정확한 열 순서로 데이터를 선택
     query = """
         SELECT 
             bike_id,
@@ -253,7 +242,6 @@ def get_admin_bikes():
     cursor.close()
     connection.close()
 
-    # JSON 응답 반환
     return jsonify(bikes)
 
 @app.route('/admin-bikeTypes', methods=['GET'])
@@ -344,14 +332,13 @@ def search_bikes():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     try:
-        data = request.json  # 프론트엔드에서 전송된 JSON 데이터
-        brand_id = data.get("brand_id")  # 클라이언트에서 전송된 brand_id
+        data = request.json  
+        brand_id = data.get("brand_id") 
         type_names = data.get("type-name", [])
         subtype_names = data.get("subtype-name", [])
         frame_materials = data.get("frame-material", [])
         wheel_materials = data.get("wheel-material", [])
 
-        # 기본 쿼리
         query = """
             SELECT bike.bike_name, bike.price
             FROM bike
@@ -363,7 +350,6 @@ def search_bikes():
         """
         params = [brand_id]
 
-        # 조건 추가
         if type_names:
             query += " AND biketype.type_name IN (%s)" % ','.join(['%s'] * len(type_names))
             params.extend(type_names)
@@ -377,7 +363,6 @@ def search_bikes():
             query += " AND wheel_material.material_name IN (%s)" % ','.join(['%s'] * len(wheel_materials))
             params.extend(wheel_materials)
 
-        # 정렬 추가
         query += " ORDER BY bike.price DESC"
 
         cursor = connection.cursor(dictionary=True)
@@ -392,8 +377,6 @@ def search_bikes():
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
 
-
-# 브라우저 자동 실행
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5500")
 

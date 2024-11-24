@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Bikes</title>
+    <title>자전거 조회 페이지</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <!-- 동적으로 제목을 업데이트 -->
     <div class="categoryHeader">
         <h1 id="header-title">&lt; 원하는 카테고리를 선택 &gt;</h1>
-        <p id="brand-message"></p> <!-- 브랜드 관련 문구 -->
+        <p id="brand-message"></p>
     </div>
 
     <div class="formContainer">
@@ -52,17 +51,16 @@
         </form>
     </div>
 
-    <!-- 검색 결과를 표시할 영역 -->
-    <div id="results-container" style="margin: 20px;"></div>
+    <div id="results-container" style="width: 40%; 
+    margin: 30px auto;">
+    </div>
 
     <script>
-        // URL의 쿼리 파라미터에서 값을 가져오는 함수
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
-        // 브랜드 이름에 따라 제목과 문구 업데이트
         function updateHeaderAndMessage() {
             const brand = getQueryParam('brand');
             const headerTitle = document.getElementById('header-title');
@@ -78,25 +76,21 @@
             }
         }
 
-        // 검색 버튼 클릭 시 API로 선택된 조건에 맞는 데이터를 조회하고 결과를 표시
         function searchBikes() {
             const form = document.getElementById('search-form');
             const formData = new FormData(form);
             const selectedValues = {};
 
-            // 폼 데이터 추출
             for (const [key, value] of formData.entries()) {
                 if (!selectedValues[key]) selectedValues[key] = [];
                 selectedValues[key].push(value);
             }
 
-            // 브랜드 ID 추가
             const brandId = getQueryParam('brand_id');
             if (brandId) {
                 selectedValues['brand_id'] = brandId;
             }
 
-            // 서버에 데이터 전송
             const resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = '<p style="text-align: center;">검색 중입니다... ⏳</p>';
 
@@ -107,7 +101,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    resultsContainer.innerHTML = ''; // 기존 결과 초기화
+                    resultsContainer.innerHTML = ''; 
 
                     if (data.length > 0) {
                         const table = document.createElement('table');
@@ -136,6 +130,8 @@
                     } else {
                         const noResultMessage = document.createElement('p');
                         noResultMessage.textContent = '조건에 맞는 자전거 정보가 없습니다 😢';
+                        noResultMessage.style.fontWeight = 'bold';
+                        noResultMessage.style.fontSize = '18px';
                         noResultMessage.style.color = 'red';
                         noResultMessage.style.textAlign = 'center';
                         resultsContainer.appendChild(noResultMessage);
@@ -147,13 +143,12 @@
                 });
         }
 
-        // API 데이터를 가져와 멀티 셀렉트 박스에 채우기
         function populateSelect(url, selectId) {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     const selectElement = document.getElementById(selectId);
-                    selectElement.innerHTML = ''; // 기존 옵션 초기화
+                    selectElement.innerHTML = ''; 
                     data.forEach(item => {
                         const option = document.createElement('option');
                         option.value = item.type_name ?? item.subtype_name ?? item.material_name ?? 'Unknown';
@@ -164,14 +159,14 @@
                 .catch(error => console.error(`Error fetching data for ${selectId}:`, error));
         }
 
-        // 페이지 로드 시 각 셀렉트 박스에 데이터 추가
         document.addEventListener('DOMContentLoaded', () => {
-            populateSelect('/bikeTypes', 'type-name'); // 카테고리
-            populateSelect('/bikeSubTypes', 'subtype-name'); // 서브 카테고리
-            populateSelect('/materials', 'frame-material'); // 프레임 재질
-            populateSelect('/materials', 'wheel-material'); // 휠 재질
-            updateHeaderAndMessage(); // 제목과 문구 업데이트
+            populateSelect('/bikeTypes', 'type-name'); 
+            populateSelect('/bikeSubTypes', 'subtype-name'); 
+            populateSelect('/materials', 'frame-material'); 
+            populateSelect('/materials', 'wheel-material'); 
+            updateHeaderAndMessage();
         });
     </script>
 </body>
+
 </html>

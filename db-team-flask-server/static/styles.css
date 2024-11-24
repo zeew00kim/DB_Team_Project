@@ -38,6 +38,7 @@ h1 {
     position: fixed;
     bottom: 0;
     width: 100%;
+    searchPage에서 테이블 조회 결과 가려서 주석처리
 } */
 
 #brand-logos {
@@ -130,7 +131,7 @@ h1 {
     transition: all 0.3s ease-in-out;
     font-size: 1.2rem;
     font-weight: bold;
-    width: 50%;
+    width: 49%;
 }
 
 .categoryButton:hover {
@@ -189,7 +190,7 @@ select {
     border-radius: 4px;
 }
 
-/* 조회 버튼을 클릭 시 조회되는 테이블 CSS 스타일 */
+/* 여기부터 조회 버튼을 클릭 시 조회되는 테이블 CSS 스타일 */
 .results-table {
     width: 100%;
     border-collapse: collapse;
@@ -209,4 +210,26 @@ select {
 
 .results-table td {
     background-color: lightgray;
+}
+
+.refreshButton {
+    float: right;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 49%;
+}
+
+.refreshButton:hover {
+    background-color: gray;
+    transform: scale(1.01);
+    font-size: 20px;
+    border: solid black 3px;
 }

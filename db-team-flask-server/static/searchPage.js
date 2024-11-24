@@ -1,10 +1,8 @@
-// URL의 쿼리 파라미터에서 값을 가져오는 함수
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
 }
 
-// 브랜드 이름에 따라 제목과 문구 업데이트
 function updateHeaderAndMessage() {
     const brand = getQueryParam('brand');
     const headerTitle = document.getElementById('header-title');
@@ -20,13 +18,12 @@ function updateHeaderAndMessage() {
     }
 }
 
-// API로부터 데이터를 가져와 멀티 셀렉트 박스를 채우는 함수
 function populateSelect(url, selectId) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
             const selectElement = document.getElementById(selectId);
-            selectElement.innerHTML = ''; // 기존 옵션 초기화
+            selectElement.innerHTML = '';
             data.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.type_name ?? item.subtype_name ?? item.material_name ?? item.brand_name ?? item.name ?? 'Unknown';
@@ -37,19 +34,16 @@ function populateSelect(url, selectId) {
         .catch(error => console.error(`Error fetching data for ${selectId}:`, error));
 }
 
-// 검색 버튼 클릭 시 API로 선택된 조건에 맞는 데이터를 조회하고 결과를 표시
 function searchBikes() {
     const form = document.getElementById('search-form');
     const formData = new FormData(form);
     const selectedValues = {};
 
-    // 폼 데이터 추출
     for (const [key, value] of formData.entries()) {
         if (!selectedValues[key]) selectedValues[key] = [];
         selectedValues[key].push(value);
     }
 
-    // 브랜드 ID 추가
     const brandId = getQueryParam('brand_id');
     if (brandId) {
         selectedValues['brand_id'] = brandId;
@@ -57,7 +51,6 @@ function searchBikes() {
         console.warn('브랜드 ID가 없습니다. 모든 브랜드를 대상으로 검색합니다.');
     }
 
-    // 서버에 데이터 전송
     const resultsContainer = document.getElementById('results-container');
     resultsContainer.innerHTML = '<p style="text-align: center;">검색 중입니다... ⏳</p>';
 
@@ -68,7 +61,7 @@ function searchBikes() {
     })
         .then(response => response.json())
         .then(data => {
-            resultsContainer.innerHTML = ''; // 기존 결과 초기화
+            resultsContainer.innerHTML = '';
 
             if (data.length > 0) {
                 const table = document.createElement('table');
@@ -108,11 +101,10 @@ function searchBikes() {
         });
 }
 
-// 페이지 로드 시 각 셀렉트 박스에 데이터 추가
 document.addEventListener('DOMContentLoaded', () => {
-    populateSelect('/bikeTypes', 'type-name'); // 카테고리
-    populateSelect('/bikeSubTypes', 'subtype-name'); // 서브 카테고리
-    populateSelect('/materials', 'frame-material'); // 프레임 재질
-    populateSelect('/materials', 'wheel-material'); // 휠 재질
-    updateHeaderAndMessage(); // 제목과 문구 업데이트
+    populateSelect('/bikeTypes', 'type-name'); 
+    populateSelect('/bikeSubTypes', 'subtype-name'); 
+    populateSelect('/materials', 'frame-material'); 
+    populateSelect('/materials', 'wheel-material'); 
+    updateHeaderAndMessage();
 });

@@ -6,12 +6,11 @@ async function fetchData(url, tableSelector, columns) {
         }
         const data = await response.json();
         const tableBody = document.querySelector(`${tableSelector} tbody`);
-        tableBody.innerHTML = ''; // 기존 데이터 초기화
+        tableBody.innerHTML = '';
 
         data.forEach(item => {
             const row = document.createElement('tr');
             
-            // 열 순서를 강제
             row.innerHTML = columns
                 .map(col => `<td>${item[col] === null ? '' : item[col]}</td>`)
                 .join('');
@@ -23,7 +22,6 @@ async function fetchData(url, tableSelector, columns) {
     }
 }
 
-// 테이블 데이터를 동적으로 호출하도록 매핑
 const tableConfigs = [
     {
         url: '/admin-bikes',
@@ -52,5 +50,4 @@ const tableConfigs = [
     }
 ];
 
-// 각 테이블에 대해 fetchData 함수 호출
 tableConfigs.forEach(config => fetchData(config.url, config.tableSelector, config.columns));
