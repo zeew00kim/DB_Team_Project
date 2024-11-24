@@ -133,68 +133,25 @@ def get_brands():
     connection.close()
 
     return jsonify(brands)
-
-# Bike 테이블 정보 가져오기
-@app.route('/bikes', methods=['GET'])
-def get_bikes():
+@app.route('/admin-bikes', methods=['GET'])
+def get_admin_bikes():
     connection = get_db_connection()
     if connection is None:
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM bike")
+    query = """
+        SELECT bike_id, subtype_id, brand_id, price, frame_material_id, wheel_material_id, bike_name
+        FROM bike
+        ORDER BY bike_id ASC
+    """
+    cursor.execute(query)
     bikes = cursor.fetchall()
     cursor.close()
     connection.close()
 
     return jsonify(bikes)
 
-# BikeType 테이블 정보 가져오기
-@app.route('/bikeTypes', methods=['GET'])
-def get_bike_types():
-    connection = get_db_connection()
-    if connection is None:
-        return jsonify({"error": "DB 연결 실패"}), 500
-
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT type_id, type_name FROM biketype")
-    bike_types = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    return jsonify(bike_types)
-
-# BikeSubType 테이블 정보 가져오기
-@app.route('/bikeSubTypes', methods=['GET'])
-def get_bike_sub_types():
-    connection = get_db_connection()
-    if connection is None:
-        return jsonify({"error": "DB 연결 실패"}), 500
-
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT subtype_id, type_id, subtype_name FROM bikesubtype")
-    bike_sub_types = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    return jsonify(bike_sub_types)
-
-# Material 테이블 정보 가져오기
-@app.route('/materials', methods=['GET'])
-def get_materials():
-    connection = get_db_connection()
-    if connection is None:
-        return jsonify({"error": "DB 연결 실패"}), 500
-
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT material_id, material_name FROM material")
-    materials = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    return jsonify(materials)
-
-# 관리자용 데이터 가져오기
 @app.route('/admin-bikeTypes', methods=['GET'])
 def get_admin_bike_types():
     connection = get_db_connection()
@@ -202,12 +159,18 @@ def get_admin_bike_types():
         return jsonify({"error": "DB 연결 실패"}), 500
 
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT type_id, type_name FROM biketype")
+    query = """
+        SELECT type_id, type_name
+        FROM biketype
+        ORDER BY type_id ASC
+    """
+    cursor.execute(query)
     bike_types = cursor.fetchall()
     cursor.close()
     connection.close()
 
     return jsonify(bike_types)
+
 
 @app.route('/admin-bikeSubTypes', methods=['GET'])
 def get_admin_bike_sub_types():
@@ -228,6 +191,7 @@ def get_admin_bike_sub_types():
 
     return jsonify(bike_sub_types)
 
+
 @app.route('/admin-brands', methods=['GET'])
 def get_admin_brands():
     connection = get_db_connection()
@@ -247,6 +211,7 @@ def get_admin_brands():
 
     return jsonify(brands)
 
+
 @app.route('/admin-materials', methods=['GET'])
 def get_admin_materials():
     connection = get_db_connection()
@@ -265,34 +230,6 @@ def get_admin_materials():
     connection.close()
 
     return jsonify(materials)
-
-@app.route('/admin-bikes', methods=['GET'])
-def get_admin_bikes():
-    connection = get_db_connection()
-    if connection is None:
-        return jsonify({"error": "DB 연결 실패"}), 500
-
-    cursor = connection.cursor(dictionary=True)
-    # 수정된 SQL 쿼리: bikesubtype 테이블을 포함한 조인
-    query = """
-        SELECT 
-            bike.bike_id,
-            bike.subtype_id,
-            bike.brand_id,
-            bike.price,
-            bike.frame_material_id,
-            bike.wheel_material_id,
-            bike.bike_name
-        FROM bike
-        INNER JOIN bikesubtype ON bike.subtype_id = bikesubtype.subtype_id
-        ORDER BY bike.bike_id ASC
-    """
-    cursor.execute(query)
-    bikes = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    return jsonify(bikes)
 
 @app.route('/searchBikes', methods=['POST'])
 def search_bikes():
